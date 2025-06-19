@@ -75,4 +75,37 @@ router.post('/login', async (req, res) => {
     }
 })
 
+// Get user details by email
+router.get('/user/:email', async (req, res) => {
+    try {
+        const user = await User.findOne({ email: req.params.email }).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+// Update user details by email
+router.put('/user/:email', async (req, res) => {
+    try {
+        const updateFields = { ...req.body };
+        // Prevent password update here
+        delete updateFields.password;
+        const user = await User.findOneAndUpdate(
+            { email: req.params.email },
+            { $set: updateFields },
+            { new: true, runValidators: true, context: 'query' }
+        ).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
 export default router;

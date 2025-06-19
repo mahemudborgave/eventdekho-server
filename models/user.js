@@ -21,7 +21,37 @@ const UserSchema = new mongoose.Schema({
         type:String,
         required: true,
         minlength: 6,
-    }    
+    },
+    gender: {
+        type: String,
+        default: '',
+        trim: true,
+    },
+    studentCollegeName: {
+        type: String,
+        default: '',
+        trim: true,
+    },
+    course: {
+        type: String,
+        default: '',
+        trim: true,
+    },
+    branch: {
+        type: String,
+        default: '',
+        trim: true,
+    },
+    year: {
+        type: String,
+        default: '',
+        trim: true,
+    },
+    mobno: {
+        type: String,
+        default: '',
+        trim: true,
+    }
 },
 { timestamps: true })
 
