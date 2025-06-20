@@ -76,16 +76,7 @@ router.get('/getevent/:eventId', async (req, res) => {
     }
 })
 
-router.get('/getcolleges', async (req, res) => {
-    try{
-        const colleges = await College.find();
-        res.status(200).json(colleges);
-    }
-    catch(error) {
-        console.log(error.message)
-        res.status(500).send("Error getting colleges");
-    }
-})
+
 
 router.get('/getcollege/:code', async (req, res) => {
     try{
@@ -215,7 +206,35 @@ router.post('/checkregistered', async (req, res) => {
   }
 });
 
+// Update event by ID
+router.put('/updateevent/:eventId', async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const update = req.body;
+    const updatedEvent = await Eventt.findByIdAndUpdate(eventId, update, { new: true });
+    if (!updatedEvent) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    res.status(200).json({ message: 'Event updated successfully', event: updatedEvent });
+  } catch (error) {
+    console.error('Error updating event:', error);
+    res.status(500).json({ error: 'Failed to update event' });
+  }
+});
 
-
+// Delete event by ID
+router.delete('/deleteevent/:eventId', async (req, res) => {
+  try {
+    const eventId = req.params.eventId;
+    const deletedEvent = await Eventt.findByIdAndDelete(eventId);
+    if (!deletedEvent) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    res.status(200).json({ message: 'Event deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting event:', error);
+    res.status(500).json({ error: 'Failed to delete event' });
+  }
+});
 
 export default router;

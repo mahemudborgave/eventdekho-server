@@ -23,6 +23,11 @@ const eventSchema = mongoose.Schema(
             minlength: 4,
             trim: true,
         },
+        collegeCity: {
+            type: String,
+            required: true,
+            trim: true,
+        },
         eventDate: {
             type: Date,
             required: true,
@@ -32,6 +37,16 @@ const eventSchema = mongoose.Schema(
             type: String,
             required: true,
             trim: true,
+        },
+        eventMode: {
+            type: String,
+            enum: ['Onsite', 'Online'],
+            required: true,
+            trim: true,
+        },
+        eventTags: {
+            type: [String],
+            default: [],
         },
         postedOn: {
             type: Date,
