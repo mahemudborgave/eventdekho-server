@@ -32,7 +32,24 @@ router.post("/addevent", async (req, res) => {
   try {
     const newEvent = new Eventt(req.body);
     await newEvent.save();
-    res.status(201).json({ message: "Event created successfully" });
+    
+    // Increment eventsHosted count for the college using collegeCode
+    try {
+      await College.findOneAndUpdate(
+        { collegeCode: req.body.collegeCode },
+        { $inc: { eventsHosted: 1 } },
+        { new: true }
+      );
+    } catch (collegeError) {
+      console.error('Error updating college events count:', collegeError);
+      // Don't fail the event creation if college update fails
+    }
+    
+    res.status(201).json({ 
+      message: "Event created successfully",
+      success: true,
+      event: newEvent
+    });
   } catch (error) {
     console.error("Error saving event:", error);
     res.status(500).json({ error: "Failed to create event" });
@@ -230,6 +247,19 @@ router.delete('/deleteevent/:eventId', async (req, res) => {
     if (!deletedEvent) {
       return res.status(404).json({ message: 'Event not found' });
     }
+    
+    // Decrement eventsHosted count for the college using collegeCode
+    try {
+      await College.findOneAndUpdate(
+        { collegeCode: deletedEvent.collegeCode },
+        { $inc: { eventsHosted: -1 } },
+        { new: true }
+      );
+    } catch (collegeError) {
+      console.error('Error updating college events count:', collegeError);
+      // Don't fail the event deletion if college update fails
+    }
+    
     res.status(200).json({ message: 'Event deleted successfully' });
   } catch (error) {
     console.error('Error deleting event:', error);

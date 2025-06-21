@@ -11,6 +11,7 @@ const collegeSchema = mongoose.Schema({
         type: String,
         trim: true,
         default: '',
+        index: true,
     },
     shortName: {
         type: String,
@@ -32,6 +33,10 @@ const collegeSchema = mongoose.Schema({
         type: String,
         trim: true,
         default: '',
+    },
+    eventsHosted: {
+        type: Number,
+        default: 0,
     },
 }, { timestamps: true });
 

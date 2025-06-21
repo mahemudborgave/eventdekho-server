@@ -12,6 +12,10 @@ const eventSchema = mongoose.Schema(
             required: true,
             trim: true,
         },
+        clubName: {
+            type: String,
+            trim: true,
+        },
         collegeName: {
             type: String,
             required: true,
@@ -22,6 +26,7 @@ const eventSchema = mongoose.Schema(
             required: true,
             minlength: 4,
             trim: true,
+            index: true,
         },
         collegeCity: {
             type: String,
