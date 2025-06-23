@@ -175,27 +175,66 @@ router.post('/stats', async (req, res) => {
   try {
     const { email } = req.body;
 
+    // Total events hosted by user
     const totalEvents = await Eventt.countDocuments({ email });
-
     const userEvents = await Eventt.find({ email });
     const eventIds = userEvents.map(e => e._id.toString());
 
-    const totalRegistrations = await EventRegistration.countDocuments({
-      eventId: { $in: eventIds },
-    });
+    // Total registrations for user's events
+    const totalRegistrations = await EventRegistration.countDocuments({ eventId: { $in: eventIds } });
 
-    const upcomingEvents = await Eventt.countDocuments({
-      email,
-      eventDate: { $gt: new Date() }
-    });
+    // Upcoming events
+    const upcomingEvents = await Eventt.countDocuments({ email, eventDate: { $gt: new Date() } });
 
+    // Total colleges
     const totalColleges = await College.countDocuments();
+
+    // Top 3 events by registrations
+    const topEventsAgg = await EventRegistration.aggregate([
+      { $match: { eventId: { $in: userEvents.map(e => e._id) } } },
+      { $group: { _id: "$eventId", registrations: { $sum: 1 }, eventName: { $first: "$eventName" } } },
+      { $sort: { registrations: -1 } },
+      { $limit: 3 },
+      { $project: { _id: 0, eventName: 1, registrations: 1 } }
+    ]);
+
+    // Average registrations per event
+    const avgRegistrations = totalEvents > 0 ? (totalRegistrations / totalEvents).toFixed(2) : 0;
+
+    // 5 most recent events
+    const recentEvents = await Eventt.find({ email })
+      .sort({ eventDate: -1 })
+      .limit(5)
+      .select('eventName eventDate');
+
+    // Event type distribution (using eventTags)
+    const eventTypeDistribution = await Eventt.aggregate([
+      { $match: { email } },
+      { $unwind: "$eventTags" },
+      { $group: { _id: "$eventTags", count: { $sum: 1 } } },
+      { $project: { _id: 0, type: "$_id", count: 1 } }
+    ]);
+
+    // Previous period stats (previous week)
+    const now = new Date();
+    const lastWeek = new Date(now);
+    lastWeek.setDate(now.getDate() - 7);
+    const prevEvents = await Eventt.countDocuments({ email, eventDate: { $lt: lastWeek } });
+    const prevRegistrations = await EventRegistration.countDocuments({ eventId: { $in: eventIds }, createdAt: { $lt: lastWeek } });
 
     res.status(200).json({
       totalEvents,
       totalRegistrations,
       upcomingEvents,
-      totalColleges
+      totalColleges,
+      topEvents: topEventsAgg,
+      avgRegistrations,
+      recentEvents,
+      eventTypeDistribution,
+      previousStats: {
+        events: prevEvents,
+        registrations: prevRegistrations
+      }
     });
   } catch (error) {
     console.error('Error fetching stats:', error);
