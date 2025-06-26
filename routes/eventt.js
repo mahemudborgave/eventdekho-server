@@ -189,13 +189,21 @@ router.post('/stats', async (req, res) => {
     // Total colleges
     const totalColleges = await College.countDocuments();
 
-    // Top 3 events by registrations
+    // Top 5 events by registrations (only existing events)
     const topEventsAgg = await EventRegistration.aggregate([
       { $match: { eventId: { $in: userEvents.map(e => e._id) } } },
-      { $group: { _id: "$eventId", registrations: { $sum: 1 }, eventName: { $first: "$eventName" } } },
+      { $group: { _id: "$eventId", registrations: { $sum: 1 } } },
+      { $lookup: {
+          from: "eventts", // collection name in MongoDB (usually plural, lowercase)
+          localField: "_id",
+          foreignField: "_id",
+          as: "eventInfo"
+        }
+      },
+      { $unwind: "$eventInfo" }, // Only keep if event still exists
+      { $project: { eventName: "$eventInfo.eventName", registrations: 1 } },
       { $sort: { registrations: -1 } },
-      { $limit: 3 },
-      { $project: { _id: 0, eventName: 1, registrations: 1 } }
+      { $limit: 5 }
     ]);
 
     // Average registrations per event
@@ -303,6 +311,17 @@ router.delete('/deleteevent/:eventId', async (req, res) => {
   } catch (error) {
     console.error('Error deleting event:', error);
     res.status(500).json({ error: 'Failed to delete event' });
+  }
+});
+
+// Get registration count for an event
+router.get('/registrations/count/:eventId', async (req, res) => {
+  try {
+    const eventId = req.params.eventId.trim();
+    const count = await EventRegistration.countDocuments({ eventId });
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching registration count' });
   }
 });
 
