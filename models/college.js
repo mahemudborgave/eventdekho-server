@@ -1,13 +1,12 @@
 import mongoose from 'mongoose';
 
-const collegeSchema = mongoose.Schema({
-
-    collegeName: {
+const organizationSchema = mongoose.Schema({
+    organizationName: {
         type: String,
         required: true,
         trim: true,
     },
-    collegeCode: {
+    organizationCode: {
         type: String,
         trim: true,
         default: '',
@@ -40,5 +39,5 @@ const collegeSchema = mongoose.Schema({
     },
 }, { timestamps: true });
 
-const College = mongoose.model('college', collegeSchema);
-export default College;
+const Organization = mongoose.model('organization', organizationSchema);
+export default Organization;

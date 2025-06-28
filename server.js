@@ -4,12 +4,14 @@ import cors from 'cors';
 import connectDB from './config/db.js';
 import sample from "./routes/sample.js";
 import login from './routes/login.js';
+import auth from './routes/auth.js';
 import eventt from './routes/eventt.js'
 import userauth from './middleware/userauth.js'
-import college from './routes/college.js'
+import organization from './routes/organization.js'
 import contactus from './routes/contactus.js'
 import blog from './routes/blog.js'
 import query from './routes/query.js'
+import root from './routes/root.js'
 import http from 'http';
 import { Server } from 'socket.io';
 // import routes from './routes/index.js';
@@ -26,13 +28,15 @@ app.get('/', (req, res) => {
   res.json({
     message: "You are on root endpoint. Please go to specific endpoints:",
     availableEndpoints: {
-      auth: "/login",
+      auth: "/auth",
+      legacyAuth: "/login",
       events: "/eventt", 
-      colleges: "/college",
+      organizations: "/organization",
       queries: "/query",
       blogs: "/blog",
       contact: "/contactus",
-      userAuth: "/userauth"
+      userAuth: "/userauth",
+      root: "/root"
     },
     serverInfo: {
       status: "running",
@@ -44,12 +48,14 @@ app.get('/', (req, res) => {
 
 app.use('/sample', sample);
 app.use('/login', login);
+app.use('/auth', auth);
 app.use('/eventt', eventt);
-app.use('/college', college);
+app.use('/organization', organization);
 app.use('/userauth', userauth);
 app.use('/contactus', contactus);
 app.use('/blog', blog);
 app.use('/query', query);
+app.use('/root', root);
 
 const server = http.createServer(app);
 const io = new Server(server, {

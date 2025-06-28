@@ -1,18 +1,20 @@
 import express from 'express';
 import Eventt from '../models/eventt.js';
-import College from '../models/college.js';
+import Organization from '../models/organization.js';
 import EventRegistration from '../models/eventRegistration.js';
 const router = express.Router();
 
 
 router.post('/add-event', async (req, res) => {
     try {
-        const {eventName, collegeName, eventDate, eventLocation, postedOn, closeOn} = req.body;
+        const {eventName, organizationName, eventDate, eventLocation, postedOn, closeOn} = req.body;
+        console.log(req.body);
+        
 
         const newEvent = new Eventt (
             {
                 eventName, 
-                collegeName, 
+                organizationName, 
                 eventDate, 
                 eventLocation, 
                 postedOn, 
@@ -30,19 +32,21 @@ router.post('/add-event', async (req, res) => {
 
 router.post("/addevent", async (req, res) => {
   try {
+    console.log(req.body);
+    
     const newEvent = new Eventt(req.body);
     await newEvent.save();
     
-    // Increment eventsHosted count for the college using collegeCode
+    // Increment eventsHosted count for the organization using organizationId
     try {
-      await College.findOneAndUpdate(
-        { collegeCode: req.body.collegeCode },
+      await Organization.findOneAndUpdate(
+        { organizationId: req.body.organizationId },
         { $inc: { eventsHosted: 1 } },
         { new: true }
       );
-    } catch (collegeError) {
-      console.error('Error updating college events count:', collegeError);
-      // Don't fail the event creation if college update fails
+    } catch (organizationError) {
+      console.error('Error updating organization events count:', organizationError);
+      // Don't fail the event creation if organization update fails
     }
     
     res.status(201).json({ 
@@ -69,8 +73,8 @@ router.get('/getevents', async (req, res) => {
 
 router.get('/getevents/:code', async (req, res) => {
     try{
-        const collegeCode = String(req.params.code.trim());
-        const events = await Eventt.find({collegeCode});
+        const organizationId = String(req.params.code.trim());
+        const events = await Eventt.find({organizationId});
         console.log(events);
         res.status(200).json(events);
     }
@@ -93,18 +97,16 @@ router.get('/getevent/:eventId', async (req, res) => {
     }
 })
 
-
-
-router.get('/getcollege/:code', async (req, res) => {
+router.get('/getorganization/:organizationId', async (req, res) => {
     try{
-        const collegeCode = String(req.params.code.trim()); // Convert to number
-        const college = await College.findOne({collegeCode}); 
-        // console.log(college)
-        res.status(200).json(college);
+        const organizationId = String(req.params.organizationId.trim()); // Convert to number
+        const organization = await Organization.findOne({_id:organizationId}); 
+        // console.log(organization)
+        res.status(200).json(organization);
     }
     catch(error) {
         console.log(error.message)
-        res.status(500).send("Error getting specific college");
+        res.status(500).send("Error getting specific organization");
     }
 })
 
@@ -186,8 +188,8 @@ router.post('/stats', async (req, res) => {
     // Upcoming events
     const upcomingEvents = await Eventt.countDocuments({ email, eventDate: { $gt: new Date() } });
 
-    // Total colleges
-    const totalColleges = await College.countDocuments();
+    // Total organizations
+    const totalOrganizations = await Organization.countDocuments();
 
     // Top 5 events by registrations (only existing events)
     const topEventsAgg = await EventRegistration.aggregate([
@@ -234,7 +236,7 @@ router.post('/stats', async (req, res) => {
       totalEvents,
       totalRegistrations,
       upcomingEvents,
-      totalColleges,
+      totalOrganizations,
       topEvents: topEventsAgg,
       avgRegistrations,
       recentEvents,
@@ -295,16 +297,16 @@ router.delete('/deleteevent/:eventId', async (req, res) => {
       return res.status(404).json({ message: 'Event not found' });
     }
     
-    // Decrement eventsHosted count for the college using collegeCode
+    // Decrement eventsHosted count for the organization using organizationId
     try {
-      await College.findOneAndUpdate(
-        { collegeCode: deletedEvent.collegeCode },
+      await Organization.findOneAndUpdate(
+        { organizationId: deletedEvent.organizationId },
         { $inc: { eventsHosted: -1 } },
         { new: true }
       );
-    } catch (collegeError) {
-      console.error('Error updating college events count:', collegeError);
-      // Don't fail the event deletion if college update fails
+    } catch (organizationError) {
+      console.error('Error updating organization events count:', organizationError);
+      // Don't fail the event deletion if organization update fails
     }
     
     res.status(200).json({ message: 'Event deleted successfully' });

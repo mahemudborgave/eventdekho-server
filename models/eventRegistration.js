@@ -28,7 +28,7 @@ const eventRegistrationSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  eventCollegeName: {
+  organizationName: {
     type: String,
     required: true
   },

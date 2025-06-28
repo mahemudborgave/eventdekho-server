@@ -16,19 +16,18 @@ const eventSchema = mongoose.Schema(
             type: String,
             trim: true,
         },
-        collegeName: {
+        organizationName: {
             type: String,
             required: true,
             trim: true,
         },
-        collegeCode: {
+        organizationId: {
             type: String,
             required: true,
-            minlength: 4,
             trim: true,
             index: true,
         },
-        collegeCity: {
+        organizationCity: {
             type: String,
             required: true,
             trim: true,
