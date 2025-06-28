@@ -29,7 +29,20 @@ router.post('/register', async (req, res) => {
 
         await newUser.save();
 
-        res.status(200).json({ message: "Sign Up Successful" });
+        // Generate JWT token for automatic login
+        const token = await jwt.sign(
+            {
+                username: newUser.name,
+                role: newUser.role
+            },
+            secret
+        );
+
+        res.status(200).json({ 
+            message: "Sign Up Successful and Logged In",
+            user: newUser,
+            token
+        });
     }
     catch (error) {
         console.log(error.message);
@@ -60,7 +73,7 @@ router.post('/login', async (req, res) => {
             secret
         );
 
-        console.log(isUserExist.name);
+        // console.log(isUserExist.name);
         res.status(200).json(
             {
                 message: "Login Successful",

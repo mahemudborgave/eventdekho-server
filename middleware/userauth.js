@@ -6,7 +6,7 @@ const router = e.Router();
 const secret = process.env.JWT_SECRET;
 
 router.post('/verifytoken', async (req, res) => {
-    console.log("got the request");
+    // console.log("got the request");
     
     const token = req.headers.authorization?.split(' ')[1];
     try {
