@@ -3,10 +3,13 @@ import jwt from 'jsonwebtoken';
 import cors from 'cors';
 import dotenv from "dotenv";
 import { createUser, authenticateUser } from '../utils/userUtils.js';
+import { OAuth2Client } from 'google-auth-library';
+import Student from '../models/student.js';
 
 dotenv.config();
 const secret = process.env.JWT_SECRET;
 const router = express.Router();
+const client = new OAuth2Client('1003672145264-datm5nj7uabjeaj07ehfpcbau1lhr1ck.apps.googleusercontent.com');
 
 // Register endpoint
 router.post('/register', async (req, res) => {
@@ -280,6 +283,7 @@ router.get('/organizations-with-events', async (req, res) => {
                 const eventCount = await Eventt.countDocuments({ email: org.email });
                 return {
                     _id: org._id,
+                    parentOrganization: org.parentOrganization,
                     organizationName: org.organizationName,
                     shortName: org.shortName,
                     organizationType: org.organizationType,
@@ -307,6 +311,63 @@ router.get('/organizations-with-events', async (req, res) => {
     } catch (error) {
         console.error('Error fetching organizations with events:', error);
         res.status(500).json({ message: "Server error while fetching organizations" });
+    }
+});
+
+// Google login endpoint
+router.post('/google', async (req, res) => {
+    const { token } = req.body;
+    try {
+        // 1. Verify Google token
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: '1003672145264-datm5nj7uabjeaj07ehfpcbau1lhr1ck.apps.googleusercontent.com',
+        });
+        const payload = ticket.getPayload();
+
+        // 2. Check if user exists in BaseUser
+        let baseUser = await BaseUser.findOne({ email: payload.email });
+        let user;
+        if (!baseUser) {
+            // 3. If not, create a new student user
+            const userData = {
+                name: payload.name,
+                email: payload.email,
+                password: Math.random().toString(36).slice(-8), // random password, not used
+                mobileNumber: '', // You can prompt for this later
+                role: 'student',
+            };
+            const result = await createUser(userData);
+            baseUser = result.baseUser;
+            user = result.user;
+        } else {
+            // 4. If exists, fetch the student document
+            user = await Student.findOne({ email: payload.email });
+        }
+
+        // 5. Generate JWT token
+        const appToken = jwt.sign(
+            {
+                email: baseUser.email,
+                role: baseUser.role,
+                userId: baseUser._id
+            },
+            secret,
+            { expiresIn: '7d' }
+        );
+
+        res.status(200).json({
+            message: "Google login successful",
+            user: {
+                name: user.name,
+                email: user.email,
+                role: baseUser.role
+            },
+            token: appToken
+        });
+    } catch (err) {
+        console.error('Google login error:', err);
+        res.status(401).json({ message: 'Invalid Google token' });
     }
 });
 

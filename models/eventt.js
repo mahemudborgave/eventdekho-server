@@ -32,6 +32,11 @@ const eventSchema = mongoose.Schema(
             required: true,
             trim: true,
         },
+        parentOrganization: {
+            type: String,
+            trim: true,
+            default: '',
+        },
         eventDate: {
             type: Date,
             required: true,
