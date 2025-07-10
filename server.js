@@ -14,6 +14,7 @@ import query from './routes/query.js'
 import root from './routes/root.js'
 import http from 'http';
 import { Server } from 'socket.io';
+import wishlist from './routes/wishlist.js';
 // import routes from './routes/index.js';
 
 dotenv.config();
@@ -56,6 +57,7 @@ app.use('/contactus', contactus);
 app.use('/blog', blog);
 app.use('/query', query);
 app.use('/root', root);
+app.use('/wishlist', wishlist);
 
 const server = http.createServer(app);
 const io = new Server(server, {
