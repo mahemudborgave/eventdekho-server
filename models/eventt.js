@@ -71,6 +71,31 @@ const eventSchema = mongoose.Schema(
             required: true,
             trim: true,
         },
+        stages: [
+            {
+                title: { type: String, trim: true },
+                description: { type: String, trim: true },
+            }
+        ],
+        prizes: [
+            {
+                title: { type: String, trim: true },
+                amount: { type: String, trim: true },
+                description: { type: String, trim: true },
+            }
+        ],
+        benefits: [
+            { type: String, trim: true }
+        ],
+        rules: [
+            { type: String, trim: true }
+        ],
+        guidelines: [
+            { type: String, trim: true }
+        ],
+        bring: [
+            { type: String, trim: true }
+        ],
     },
     { timestamps: true }
 )

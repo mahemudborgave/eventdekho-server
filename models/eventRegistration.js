@@ -32,6 +32,11 @@ const eventRegistrationSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  parentOrganization: {
+    type: String,
+    trim: true,
+    default: '',
+  },  
   branch: {
     type: String,
     required: true
