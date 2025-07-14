@@ -16,6 +16,7 @@ import http from 'http';
 import { Server } from 'socket.io';
 import wishlist from './routes/wishlist.js';
 import featuredImages from './routes/featuredImages.js';
+import stats from "./routes/stats.js";
 // import routes from './routes/index.js';
 
 dotenv.config();
@@ -60,6 +61,7 @@ app.use('/query', query);
 app.use('/root', root);
 app.use('/wishlist', wishlist);
 app.use('/api/featured-images', featuredImages);
+app.use('/stats', stats);
 
 const server = http.createServer(app);
 const io = new Server(server, {

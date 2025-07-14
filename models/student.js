@@ -19,8 +19,9 @@ const StudentSchema = new mongoose.Schema({
     },
     mobileNumber: {
         type: String,
-        required: true,
         trim: true,
+        // required: true, // Make mobileNumber optional for Google signup
+        default: '',
     },
     // Student-specific fields (optional - to be filled in profile)
     collegeName: {

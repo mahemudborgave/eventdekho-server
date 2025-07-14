@@ -5,6 +5,9 @@ import dotenv from "dotenv";
 import { createUser, authenticateUser } from '../utils/userUtils.js';
 import { OAuth2Client } from 'google-auth-library';
 import Student from '../models/student.js';
+import Organization from '../models/organization.js';
+import Eventt from '../models/eventt.js';
+import BaseUser from '../models/baseUser.js';
 
 dotenv.config();
 const secret = process.env.JWT_SECRET;
@@ -370,5 +373,7 @@ router.post('/google', async (req, res) => {
         res.status(401).json({ message: 'Invalid Google token' });
     }
 });
+
+
 
 export default router; 
