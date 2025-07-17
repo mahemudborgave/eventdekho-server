@@ -71,6 +71,11 @@ const eventSchema = mongoose.Schema(
             required: true,
             trim: true,
         },
+        posterUrl: {
+            type: String,
+            trim: true,
+            default: '',
+        },
         stages: [
             {
                 title: { type: String, trim: true },
