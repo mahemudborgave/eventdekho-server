@@ -131,10 +131,14 @@ router.post('/login', async (req, res) => {
         );
 
         // Prepare response data
+        let userName = '';
+        if (result.user) {
+            userName = result.baseUser.role === 'student' ? result.user.name : result.user.organizationName;
+        }
         const responseData = {
             user: {
-                name: result.baseUser.role === 'student' ? result.user.name : result.user.organizationName,
-                email: result.user.email,
+                name: userName,
+                email: result.user ? result.user.email : '',
                 role: result.baseUser.role
             },
             token: token
@@ -298,7 +302,8 @@ router.get('/organizations-with-events', async (req, res) => {
                     email: org.email,
                     eventsHosted: eventCount,
                     createdAt: org.createdAt,
-                    updatedAt: org.updatedAt
+                    updatedAt: org.updatedAt,
+                    logo: org.logo,
                 };
             })
         );

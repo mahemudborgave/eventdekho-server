@@ -41,8 +41,8 @@ router.get('/visitors/total', async (req, res) => {
     res.json({ count });
   } catch (err) {
     res.status(500).json({ message: 'Error fetching visitor count' });
-  }
-});
+    }
+  });
 
 
 export default router;

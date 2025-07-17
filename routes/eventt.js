@@ -2,6 +2,7 @@ import express from 'express';
 import Eventt from '../models/eventt.js';
 import Organization from '../models/organization.js';
 import EventRegistration from '../models/eventRegistration.js';
+import mongoose from 'mongoose';
 const router = express.Router();
 
 
@@ -85,20 +86,26 @@ router.get('/getevents/:code', async (req, res) => {
 })
 
 router.get('/getevent/:eventId', async (req, res) => {
-    try{
+    try {
         const eventId = req.params.eventId.trim();
-        const event = await Eventt.findOne({ _id: eventId });
+        // Check if eventId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(eventId)) {
+            return res.status(400).json({ error: 'Invalid event ID' });
+        }
+        const event = await Eventt.findById(new mongoose.Types.ObjectId(eventId));
+        if (!event) {
+            return res.status(404).json({ error: 'Event not found' });
+        }
         console.log(event);
         res.status(200).json(event);
-    }
-    catch(error) {
-        console.log(error.message)
+    } catch (error) { 
+        console.log(error.message);
         res.status(500).send("Error getting specific event");
     }
-})
+});
 
 router.get('/getorganization/:organizationId', async (req, res) => {
-    try{
+    try{    
         const organizationId = String(req.params.organizationId.trim()); // Convert to number
         const organization = await Organization.findOne({_id:organizationId}); 
         // console.log(organization)

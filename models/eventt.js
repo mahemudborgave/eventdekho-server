@@ -96,6 +96,21 @@ const eventSchema = mongoose.Schema(
         bring: [
             { type: String, trim: true }
         ],
+        // Payment fields for Razorpay integration
+        fee: {
+            type: Number,
+            default: 0,
+        },
+        upiId: {
+            type: String,
+            trim: true,
+            default: '',
+        },
+        bankDetails: {
+            type: String,
+            trim: true,
+            default: '',
+        },
     },
     { timestamps: true }
 )

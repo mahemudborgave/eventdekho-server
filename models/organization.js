@@ -66,6 +66,12 @@ const OrganizationSchema = new mongoose.Schema({
         trim: true,
         default: '',
     },
+    // Organization logo URL
+    logo: {
+        type: String,
+        trim: true,
+        default: '',
+    },
     eventsHosted: {
         type: Number,
         default: 0,
