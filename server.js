@@ -80,6 +80,6 @@ app.set('io', io);
 
 connectDB();
 
-server.listen(PORT, () => console.log(`Server Running on port ${PORT}`));
+// server.listen(PORT, () => console.log(`Server Running on port ${PORT}`));
 
 export default app;

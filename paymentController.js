@@ -6,7 +6,6 @@ const paymentController = {
   createOrder: async (req, res) => {
     try {
       const { amount, eventId, studentId } = req.body;
-      console.log('[DEBUG] /api/payment/create-order body:', req.body);
       // Shorten studentId to username part only
       const studentShort = studentId && typeof studentId === 'string' ? studentId.split('@')[0] : 'user';
       // Compose a short receipt string (max 40 chars)
@@ -16,9 +15,7 @@ const paymentController = {
         currency: 'INR',
         receipt: shortReceipt,
       };
-      console.log('[DEBUG] Razorpay order options:', options);
       const order = await razorpay.orders.create(options);
-      console.log('[DEBUG] Razorpay order created:', order);
       res.json({ orderId: order.id, amount: order.amount, currency: order.currency });
     } catch (err) {
       console.error('[ERROR] Razorpay order creation error:', err);
@@ -27,7 +24,6 @@ const paymentController = {
   },
   verifyPayment: async (req, res) => {
     try {
-      console.log('[DEBUG] /api/payment/verify body:', req.body);
       const { razorpay_order_id, razorpay_payment_id, razorpay_signature, eventId, studentId } = req.body;
       const sign = razorpay_order_id + '|' + razorpay_payment_id;
       const expectedSignature = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET)
@@ -42,8 +38,6 @@ const paymentController = {
           razorpay_signature,
           status: 'success',
         });
-        console.log('[DEBUG] Payment document created:', paymentDoc);
-        res.json({ success: true, message: 'Payment verified and registration complete' });
       } else {
         console.error('[ERROR] Invalid Razorpay signature:', { expectedSignature, razorpay_signature });
         res.status(400).json({ success: false, message: 'Invalid signature' });

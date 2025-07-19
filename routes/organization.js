@@ -82,7 +82,7 @@ router.get('/getorganizations', async (req, res) => {
     res.status(200).json(organizations);
   }
   catch (error) {
-    console.log(error.message)
+    // console.log(error.message)
     res.status(500).send("Error getting organizations");
   }
 })
@@ -94,7 +94,7 @@ router.get('/getallorganizations', async (req, res) => {
     res.status(200).json(organizations);
   }
   catch (error) {
-    console.log(error.message)
+    // console.log(error.message)
     res.status(500).send("Error getting all organizations");
   }
 })

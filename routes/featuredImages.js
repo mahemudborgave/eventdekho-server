@@ -39,4 +39,20 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Delete a featured image (root only)
+router.delete('/:id', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ message: 'No token provided' });
+    const decoded = jwt.verify(token, secret);
+    if (decoded.role !== 'root') return res.status(403).json({ message: 'Root access required' });
+    const { id } = req.params;
+    const deleted = await FeaturedImage.findByIdAndDelete(id);
+    if (!deleted) return res.status(404).json({ message: 'Image not found' });
+    res.json({ message: 'Image deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
 export default router; 

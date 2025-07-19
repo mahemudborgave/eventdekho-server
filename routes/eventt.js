@@ -9,7 +9,7 @@ const router = express.Router();
 router.post('/add-event', async (req, res) => {
     try {
         const {eventName, organizationName, eventDate, eventLocation, postedOn, closeOn} = req.body;
-        console.log(req.body);
+        // console.log(req.body);
         
 
         const newEvent = new Eventt (
@@ -26,14 +26,14 @@ router.post('/add-event', async (req, res) => {
         res.status(200).json({message:"Event Added Successfully"});
     }
     catch(error) {
-        console.log(error.message)
+        // console.log(error.message)
         res.status(500).send("Error adding event");
     }
 })
 
 router.post("/addevent", async (req, res) => {
   try {
-    console.log(req.body);
+    // console.log(req.body);
     
     const newEvent = new Eventt(req.body);
     await newEvent.save();
@@ -46,7 +46,7 @@ router.post("/addevent", async (req, res) => {
         { new: true }
       );
     } catch (organizationError) {
-      console.error('Error updating organization events count:', organizationError);
+      // console.error('Error updating organization events count:', organizationError);
       // Don't fail the event creation if organization update fails
     }
     
@@ -56,7 +56,7 @@ router.post("/addevent", async (req, res) => {
       event: newEvent
     });
   } catch (error) {
-    console.error("Error saving event:", error);
+    // console.error("Error saving event:", error);
     res.status(500).json({ error: "Failed to create event" });
   }
 });
@@ -67,7 +67,7 @@ router.get('/getevents', async (req, res) => {
         res.status(200).json(events);
     }
     catch(error) {
-        console.log(error.message)
+        // console.log(error.message)
         res.status(500).send("Error getting events");
     }
 })
@@ -76,11 +76,11 @@ router.get('/getevents/:code', async (req, res) => {
     try{
         const organizationId = String(req.params.code.trim());
         const events = await Eventt.find({organizationId});
-        console.log(events);
+        // console.log(events);
         res.status(200).json(events);
     }
     catch(error) {
-        console.log(error.message)
+        // console.log(error.message)
         res.status(500).send("Error getting specific events");
     }
 })
@@ -96,10 +96,10 @@ router.get('/getevent/:eventId', async (req, res) => {
         if (!event) {
             return res.status(404).json({ error: 'Event not found' });
         }
-        console.log(event);
+        // console.log(event);
         res.status(200).json(event);
     } catch (error) { 
-        console.log(error.message);
+        // console.log(error.message);
         res.status(500).send("Error getting specific event");
     }
 });
@@ -112,7 +112,7 @@ router.get('/getorganization/:organizationId', async (req, res) => {
         res.status(200).json(organization);
     }
     catch(error) {
-        console.log(error.message)
+        // console.log(error.message)
         res.status(500).send("Error getting specific organization");
     }
 })
@@ -129,7 +129,7 @@ router.post('/registerevent', async (req, res) => {
     await registration.save();
     res.status(201).json({ message: 'Registration successful', data: registration });
   } catch (err) {
-    console.error(err);
+    // console.error(err);
     res.status(400).json({ error: err.message });
   }
 });
@@ -157,7 +157,7 @@ router.get('/geteventregfromeventid/:eventId', async (req, res) => {
 // Delete event api
 
 router.post('/deleteRegistration', async (req, res) => {
-    console.log("some");
+    // console.log("some");
     
   const { eventId, email } = req.body;
 
@@ -174,7 +174,7 @@ router.post('/deleteRegistration', async (req, res) => {
 
     res.json({ message: 'Registration deleted successfully' });
   } catch (error) {
-    console.error('Error deleting registration:', error);
+    // console.error('Error deleting registration:', error);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -254,7 +254,7 @@ router.post('/stats', async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('Error fetching stats:', error);
+    // console.error('Error fetching stats:', error);
     res.status(500).json({ message: 'Error fetching stats' });
   }
 }); 
@@ -274,7 +274,7 @@ router.post('/checkregistered', async (req, res) => {
       return res.status(200).json({ registered: false });
     }
   } catch (err) {
-    console.error("Error checking registration:", err);
+    // console.error("Error checking registration:", err);
     return res.status(500).json({ registered: false, message: "Server error" });
   }
 });
@@ -290,7 +290,7 @@ router.put('/updateevent/:eventId', async (req, res) => {
     }
     res.status(200).json({ message: 'Event updated successfully', event: updatedEvent });
   } catch (error) {
-    console.error('Error updating event:', error);
+    // console.error('Error updating event:', error);
     res.status(500).json({ error: 'Failed to update event' });
   }
 });
@@ -312,13 +312,13 @@ router.delete('/deleteevent/:eventId', async (req, res) => {
         { new: true }
       );
     } catch (organizationError) {
-      console.error('Error updating organization events count:', organizationError);
+      // console.error('Error updating organization events count:', organizationError);
       // Don't fail the event deletion if organization update fails
     }
     
     res.status(200).json({ message: 'Event deleted successfully' });
   } catch (error) {
-    console.error('Error deleting event:', error);
+    // console.error('Error deleting event:', error);
     res.status(500).json({ error: 'Failed to delete event' });
   }
 });

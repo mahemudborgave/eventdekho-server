@@ -7,6 +7,8 @@ import Eventt from '../models/eventt.js';
 import eventRegistration from '../models/eventRegistration.js';
 import Organization from '../models/organization.js';
 import Student from '../models/student.js';
+import Payment from '../models/payment.js';
+import Query from '../models/query.js';
 
 dotenv.config();
 const secret = process.env.JWT_SECRET;
@@ -444,6 +446,43 @@ router.delete('/registrations/:registrationId', async (req, res) => {
     } catch (error) {
         console.error('Error deleting registration:', error);
         res.status(500).json({ message: "Server error while deleting registration" });
+    }
+});
+
+// Get all transactions (root)
+router.get('/transactions', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: "No token provided" });
+        }
+        const decoded = jwt.verify(token, secret);
+        if (decoded.role !== 'root') {
+            return res.status(403).json({ message: "Root access required" });
+        }
+        const transactions = await Payment.find().sort({ createdAt: -1 });
+        res.json(transactions);
+    } catch (error) {
+        console.error('Error fetching transactions:', error);
+        res.status(500).json({ message: "Server error while fetching transactions" });
+    }
+});
+// Get all queries (root)
+router.get('/queries', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: "No token provided" });
+        }
+        const decoded = jwt.verify(token, secret);
+        if (decoded.role !== 'root') {
+            return res.status(403).json({ message: "Root access required" });
+        }
+        const queries = await Query.find().sort({ createdAt: -1 });
+        res.json(queries);
+    } catch (error) {
+        console.error('Error fetching queries:', error);
+        res.status(500).json({ message: "Server error while fetching queries" });
     }
 });
 
