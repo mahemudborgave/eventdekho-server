@@ -1,6 +1,9 @@
 import razorpay from './utils/razorpay.js';
 import Payment from './models/payment.js';
 import crypto from 'crypto';
+import EventRegistration from './models/eventRegistration.js';
+import Eventt from './models/eventt.js';
+import Student from './models/student.js';
 
 const paymentController = {
   createOrder: async (req, res) => {
@@ -38,6 +41,29 @@ const paymentController = {
           razorpay_signature,
           status: 'success',
         });
+        // Fetch event and student details
+        const event = await Eventt.findById(eventId);
+        const student = await Student.findOne({ email: studentId });
+        if (!event || !student) {
+          return res.status(400).json({ success: false, message: 'Event or student not found for registration' });
+        }
+        // Create event registration
+        const registration = new EventRegistration({
+          eventId: event._id,
+          eventName: event.eventName,
+          studentName: student.name,
+          email: student.email,
+          gender: student.gender || '',
+          studentCollegeName: student.collegeName || '',
+          organizationName: event.organizationName,
+          parentOrganization: event.parentOrganization || '',
+          branch: student.branch || '',
+          course: student.course || '',
+          year: student.year || '',
+          mobno: student.mobileNumber || '',
+        });
+        await registration.save();
+        return res.status(200).json({ success: true, message: 'Payment and registration successful', payment: paymentDoc, registration });
       } else {
         console.error('[ERROR] Invalid Razorpay signature:', { expectedSignature, razorpay_signature });
         res.status(400).json({ success: false, message: 'Invalid signature' });
