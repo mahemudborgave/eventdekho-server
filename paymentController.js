@@ -39,6 +39,7 @@ const paymentController = {
           razorpay_order_id,
           razorpay_payment_id,
           razorpay_signature,
+          amount: req.body.amount, // in paise
           status: 'success',
         });
         // Fetch event and student details

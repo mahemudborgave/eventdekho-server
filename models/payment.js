@@ -6,6 +6,7 @@ const PaymentSchema = new mongoose.Schema({
   razorpay_order_id: String,
   razorpay_payment_id: String,
   razorpay_signature: String,
+  amount: { type: Number, required: true }, // in paise
   status: { type: String, default: 'success' },
   createdAt: { type: Date, default: Date.now },
 });

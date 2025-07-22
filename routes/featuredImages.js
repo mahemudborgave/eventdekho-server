@@ -17,9 +17,10 @@ router.post('/', upload.single('image'), async (req, res) => {
     if (decoded.role !== 'root') return res.status(403).json({ message: 'Root access required' });
 
     if (!req.file) return res.status(400).json({ message: 'No image file provided' });
+    if (!req.body.eventName || !req.body.eventUrl) return res.status(400).json({ message: 'Event name and event URL are required' });
     const result = await cloudinary.uploader.upload_stream({ folder: 'eventdekho/featured' }, async (error, result) => {
       if (error) return res.status(500).json({ message: 'Cloudinary upload failed', error });
-      const featuredImage = new FeaturedImage({ url: result.secure_url, title: req.body.title });
+      const featuredImage = new FeaturedImage({ url: result.secure_url, title: req.body.title, eventName: req.body.eventName, eventUrl: req.body.eventUrl });
       await featuredImage.save();
       res.status(201).json(featuredImage);
     });

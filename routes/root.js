@@ -578,4 +578,43 @@ router.get('/stats', async (req, res) => {
     }
 });
 
+// Get organization by email with events and event payment stats
+router.get('/organizations/:email', async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: "No token provided" });
+        }
+        const decoded = jwt.verify(token, secret);
+        if (decoded.role !== 'root') {
+            return res.status(403).json({ message: "Root access required" });
+        }
+        const { email } = req.params;
+        const organization = await Organization.findOne({ email });
+        if (!organization) {
+            return res.status(404).json({ message: "Organization not found" });
+        }
+        // Get all events for this organization
+        const events = await Eventt.find({ email });
+        // For each event, get total amount received (sum of payments)
+        const eventIds = events.map(e => e._id);
+        const payments = await Payment.find({ eventId: { $in: eventIds } });
+        const eventPayments = {};
+        payments.forEach(p => {
+            const eid = p.eventId.toString();
+            if (!eventPayments[eid]) eventPayments[eid] = 0;
+            eventPayments[eid] += p.amount || 0;
+        });
+        // Attach totalAmountReceived to each event
+        const eventsWithStats = events.map(e => ({
+            ...e.toObject(),
+            totalAmountReceived: eventPayments[e._id.toString()] || 0
+        }));
+        res.json({ organization, events: eventsWithStats });
+    } catch (error) {
+        console.error('Error fetching organization details:', error);
+        res.status(500).json({ message: "Server error while fetching organization details" });
+    }
+});
+
 export default router; 
