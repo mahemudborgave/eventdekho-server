@@ -56,6 +56,19 @@ const eventRegistrationSchema = new mongoose.Schema({
     required: true,
     match: /^[6-9]\d{9}$/
   },
+  extraParticipants: [
+    {
+      name: { type: String, trim: true },
+      gender: { type: String, enum: ['Male', 'Female', 'Other'], trim: true },
+      email: { type: String, trim: true },
+      phone: { type: String, trim: true },
+    }
+  ],
+  fee: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
   createdAt: {
     type: Date,
     default: Date.now

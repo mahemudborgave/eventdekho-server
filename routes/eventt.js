@@ -122,14 +122,52 @@ router.get('/getorganization/:organizationId', async (req, res) => {
 
 router.post('/registerevent', async (req, res) => {    
   try {
-    // console.log(req.body);
-    
+    console.log('Incoming registration request:', JSON.stringify(req.body, null, 2));
+    if (Array.isArray(req.body.extraParticipants)) {
+      console.log('Extra participants:', req.body.extraParticipants);
+    }
+    // Validate main participant fields
+    const requiredFields = [
+      'eventId', 'eventName', 'studentName', 'email', 'gender',
+      'studentCollegeName', 'organizationName', 'branch', 'course', 'year', 'mobno'
+    ];
+    for (const field of requiredFields) {
+      if (!req.body[field] || (typeof req.body[field] === 'string' && !req.body[field].trim())) {
+        return res.status(400).json({ error: `Missing or empty field: ${field}` });
+      }
+    }
+    // Validate fee
+    if ('fee' in req.body && (typeof req.body.fee !== 'number' || req.body.fee < 0)) {
+      return res.status(400).json({ error: 'Invalid fee value' });
+    }
+    // Validate extraParticipants if present
+    if (Array.isArray(req.body.extraParticipants)) {
+      for (let i = 0; i < req.body.extraParticipants.length; i++) {
+        const p = req.body.extraParticipants[i];
+        if (!p.name || !p.gender || !p.email || !p.phone) {
+          console.log(`Validation error: Missing fields for extra participant #${i + 2}`, p);
+          return res.status(400).json({ error: `Missing fields for extra participant #${i + 2}` });
+        }
+        if (!/^\S+@\S+\.\S+$/.test(p.email)) {
+          console.log(`Validation error: Invalid email for extra participant #${i + 2}`, p.email);
+          return res.status(400).json({ error: `Invalid email for extra participant #${i + 2}` });
+        }
+        if (!/^\d{10}$/.test(p.phone)) {
+          console.log(`Validation error: Invalid phone number for extra participant #${i + 2}`, p.phone);
+          return res.status(400).json({ error: `Invalid phone number for extra participant #${i + 2}` });
+        }
+      }
+    }
+    // Duplicate registration check
+    const existing = await EventRegistration.findOne({ eventId: req.body.eventId, email: req.body.email });
+    if (existing) {
+      return res.status(409).json({ error: 'You have already registered for this event with this email.' });
+    }
     const registration = new EventRegistration(req.body);
-    
     await registration.save();
     res.status(201).json({ message: 'Registration successful', data: registration });
   } catch (err) {
-    // console.error(err);
+    console.error('Registration error:', err);
     res.status(400).json({ error: err.message });
   }
 });

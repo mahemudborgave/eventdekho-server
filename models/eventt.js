@@ -116,6 +116,16 @@ const eventSchema = mongoose.Schema(
             trim: true,
             default: '',
         },
+        minParticipants: {
+            type: Number,
+            required: true,
+            default: 1,
+        },
+        maxParticipants: {
+            type: Number,
+            required: true,
+            default: 1,
+        },
     },
     { timestamps: true }
 )
