@@ -126,6 +126,22 @@ const eventSchema = mongoose.Schema(
             required: true,
             default: 1,
         },
+        registrationPlatform: {
+            type: String,
+            enum: ['eventapply', 'external'],
+            default: 'eventapply',
+            required: true,
+        },
+        registrationUrl: {
+            type: String,
+            trim: true,
+            default: '',
+        },
+        registrationStartOn: {
+            type: Date,
+            required: true,
+            trim: true,
+        },
     },
     { timestamps: true }
 )
