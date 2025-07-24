@@ -59,6 +59,11 @@ const paymentController = {
           console.error('[ERROR] Event or student not found for registration', { event, student });
           return res.status(400).json({ success: false, message: 'Event or student not found for registration' });
         }
+        // Check for existing registration
+        const existingRegistration = await EventRegistration.findOne({ eventId: event._id, email: student.email });
+        if (existingRegistration) {
+          return res.status(409).json({ success: false, message: 'You are already registered for this event.' });
+        }
         // Create event registration
         console.log('[DEBUG] Creating EventRegistration...');
         const registration = new EventRegistration({
