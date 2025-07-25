@@ -20,6 +20,27 @@ router.post('/registerorganization', async (req, res) => {
   }
 });
 
+// // Register a new parent organization
+// router.post('/registerparentorganization', async (req, res) => {
+//   try {
+//     let { organizationName, organizationCode, shortName, city, type, tier } = req.body;
+//     if (!organizationName || !city) {
+//       return res.status(400).json({ message: 'organizationName and city are required.' });
+//     }
+//     if (!organizationCode || organizationCode.trim() === '') {
+//       organizationCode = 'POC' + Date.now();
+//     }
+//     if (!type) {
+//       type = 'college'; // Default to college for parent orgs
+//     }
+//     const organization = new Organization({ organizationName, organizationCode, shortName, city, type, tier });
+//     await organization.save();
+//     res.status(201).json({ message: 'Parent organization registered successfully', organization });
+//   } catch (err) {
+//     res.status(500).json({ message: 'Error registering parent organization', error: err.message });
+//   }
+// });
+
 // Increment events hosted count for a organization
 router.put('/incrementEvents', async (req, res) => {
   try {

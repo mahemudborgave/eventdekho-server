@@ -18,6 +18,7 @@ import wishlist from './routes/wishlist.js';
 import featuredImages from './routes/featuredImages.js';
 import stats from "./routes/stats.js";
 import paymentRoutes from './routes/payment.js';
+import collegeRoutes from './routes/college.js';
 // import routes from './routes/index.js';
 
 dotenv.config();
@@ -64,6 +65,7 @@ app.use('/wishlist', wishlist);
 app.use('/api/featured-images', featuredImages);
 app.use('/api/payment', paymentRoutes);
 app.use('/stats', stats);
+app.use('/college', collegeRoutes);
 
 const server = http.createServer(app);
 const io = new Server(server, {
