@@ -165,6 +165,8 @@ router.post('/registerevent', async (req, res) => {
     }
     const registration = new EventRegistration(req.body);
     await registration.save();
+    // Increment participationsCount for the event
+    await Eventt.findByIdAndUpdate(req.body.eventId, { $inc: { participationsCount: 1 } });
     res.status(201).json({ message: 'Registration successful', data: registration });
   } catch (err) {
     console.error('Registration error:', err);

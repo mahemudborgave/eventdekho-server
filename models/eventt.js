@@ -142,6 +142,10 @@ const eventSchema = mongoose.Schema(
             required: true,
             trim: true,
         },
+        participationsCount: {
+            type: Number,
+            default: 0,
+        },
     },
     { timestamps: true }
 )

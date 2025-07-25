@@ -82,6 +82,8 @@ const paymentController = {
           fee: typeof event.fee === 'number' ? event.fee : (req.body.amount ? req.body.amount / 100 : 0),
         });
         await registration.save();
+        // Increment participationsCount for the event
+        await Eventt.findByIdAndUpdate(event._id, { $inc: { participationsCount: 1 } });
         console.log('[DEBUG] EventRegistration created:', registration);
         return res.status(200).json({ success: true, message: 'Payment and registration successful', payment: paymentDoc, registration });
       } else {
